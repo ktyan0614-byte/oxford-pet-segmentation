@@ -1,0 +1,25 @@
+# Dataset (Oxford-IIIT Pet) — too large for git, download separately (see README)
+dataset/
+dataset.zip
+
+# Trained model checkpoints — too large for git, retrain locally (see README)
+saved_models/
+*.pth
+*.pt
+
+# Course assignment sheet (copyrighted course material, not redistributed)
+*.pdf
+
+# Kaggle-style submission artifacts / test split lists (regenerable)
+submission_*.csv
+test_unet.txt
+test_res_unet.txt
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
