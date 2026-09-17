@@ -149,7 +149,7 @@ pip install -r requirements.txt
 
 - **路徑寫死、缺乏設定檔**：目前訓練/推論腳本以 Colab Drive 絕對路徑硬編碼，尚未改為 `argparse` 或 config file（YAML/JSON），不利於本機或跨環境重現。
 - **`pretrained` 參數未實作**：`ResNet34_UNet` 建構子保留 `pretrained` flag，但沒有載入 ImageNet 權重的邏輯，目前兩個模型都是從零訓練；之後可以比較「random init」vs「ImageNet pretrained encoder」的差異。
-- **未保存訓練日誌 / 沒有實驗追蹤**：原始訓練在 Colab 上進行，過程僅印出 stdout（loss / val Dice per epoch），作業繳交時只保留最終權重與 Dice 結果，沒有留下逐 epoch 的 log 檔；之後可以整合 TensorBoard / Weights & Biases 記錄 loss curve、learning rate 變化，並保存 config 與 checkpoint 的對應關係。
+- **沒有整合實驗追蹤工具**：訓練過程以 stdout 印出 loss / val Dice per epoch，並未整合 TensorBoard / Weights & Biases 等工具記錄 loss curve、learning rate 變化，也沒有保存 config 與 checkpoint 的對應關係；之後可以補上。
 - **單一固定 threshold**：推論時二值化門檻固定為 0.5，尚未針對驗證集做 threshold sweep 找最佳操作點。
 - **缺乏單元測試**：Dataset、loss function、RLE encode/decode 等模組沒有對應的 unit test。
 - **評估指標單一**：目前僅以 Dice score 衡量，可以再補充 IoU、pixel accuracy、邊界 F-score 等指標做更完整的分析。
