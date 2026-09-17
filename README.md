@@ -81,10 +81,20 @@ Encoder 依照 ResNet-34 的 block 配置（`[3, 4, 6, 3]` 個 `BasicBlock`，�
 
 殘差連接（residual connections）帶來的更深層特徵萃取能力，加上 BCE+Dice 混合損失與 AMP/cosine schedule 的訓練設定，使 ResNet34-UNet 在驗證集上取得約 0.43 個百分點的 Dice 提升。兩模型在官方 test split 上另有產生 Kaggle 形式的提交檔（`submission_unet.csv` / `submission_resnet_final.csv`，未納入本 repo，可透過 `src/inference*.py` 重現）。
 
+### 4.1 質性結果（Qualitative Results）
+
+隨機抽取 4 張驗證集影像，比較原圖、ground truth 遮罩與兩模型的預測結果：
+
+![Qualitative segmentation results: input image, ground truth, UNet prediction, and ResNet34-UNet prediction side by side](assets/qualitative_results.png)
+
+可以觀察到 ResNet34-UNet 的邊界更貼合 ground truth、雜訊區塊（如第二列 UNet 在右上角的離群白色雜點）也更少，與量化的 Dice score 提升一致。
+
 ## 5. 專案結構（Repository Structure）
 
 ```
 .
+├── assets/
+│   └── qualitative_results.png  # 原圖 / GT / 兩模型預測 並排比較
 ├── src/
 │   ├── models/
 │   │   ├── unet.py              # UNet
@@ -139,10 +149,9 @@ pip install -r requirements.txt
 
 - **路徑寫死、缺乏設定檔**：目前訓練/推論腳本以 Colab Drive 絕對路徑硬編碼，尚未改為 `argparse` 或 config file（YAML/JSON），不利於本機或跨環境重現。
 - **`pretrained` 參數未實作**：`ResNet34_UNet` 建構子保留 `pretrained` flag，但沒有載入 ImageNet 權重的邏輯，目前兩個模型都是從零訓練；之後可以比較「random init」vs「ImageNet pretrained encoder」的差異。
-- **未保存訓練日誌 / 沒有實驗追蹤**：目前只印出 stdout，沒有整合 TensorBoard / Weights & Biases 之類的工具記錄 loss curve、learning rate 變化，也沒有保存 config 與 checkpoint 的對應關係。
+- **未保存訓練日誌 / 沒有實驗追蹤**：原始訓練在 Colab 上進行，過程僅印出 stdout（loss / val Dice per epoch），作業繳交時只保留最終權重與 Dice 結果，沒有留下逐 epoch 的 log 檔；之後可以整合 TensorBoard / Weights & Biases 記錄 loss curve、learning rate 變化，並保存 config 與 checkpoint 的對應關係。
 - **單一固定 threshold**：推論時二值化門檻固定為 0.5，尚未針對驗證集做 threshold sweep 找最佳操作點。
 - **缺乏單元測試**：Dataset、loss function、RLE encode/decode 等模組沒有對應的 unit test。
-- **沒有視覺化範例**：README 尚未附上「原圖 / ground truth / 預測遮罩」的並排視覺化，之後可補充以更直觀展示模型效果。
 - **評估指標單一**：目前僅以 Dice score 衡量，可以再補充 IoU、pixel accuracy、邊界 F-score 等指標做更完整的分析。
 
 ## 8. 環境與依賴（Environment）
